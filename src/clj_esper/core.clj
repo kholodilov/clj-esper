@@ -142,10 +142,12 @@
   (doseq [s statements] (apply attach-statement s handlers)))
 
 (defn trigger-event
-  [event]
-  (let [event-type (event-name (meta event))
-        event-data (stringify-keys event)]
-    (send-event *service* event-data event-type)))
+  ([service event]
+    (let [event-type (event-name (meta event))
+          event-data (stringify-keys event)]
+      (send-event service event-data event-type)))
+  ([event]
+    (trigger-event *service* event)))
 
 (defn statement-names
   "Returns the names of all statements that have been registered"

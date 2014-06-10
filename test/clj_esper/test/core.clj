@@ -28,7 +28,7 @@
   (is (= "TestEvent"
          (event-name TestEvent)))
   (is (= [:a :b]
-         (event-attribute-names TestEvent)))
+         (sort (event-attribute-names TestEvent))))
   (is (= {:a :int :b :string}
          (event-attributes TestEvent)))
   (is (= {:a nil :b nil}
