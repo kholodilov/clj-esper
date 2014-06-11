@@ -10,7 +10,8 @@
   [fun]
   (proxy [UpdateListener] []
     (update [newEvents oldEvents]
-      (apply fun newEvents))))
+      (let [newEventsAsMaps (map #(.getProperties %) newEvents)]
+        (apply fun newEventsAsMaps)))))
 
 (defn create-service
   ([configuration]

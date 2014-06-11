@@ -1,8 +1,7 @@
 (ns clj-esper.test.core
   (:use [clj-esper.core] :reload)
   (:use [clojure.test])
-  (:import [com.espertech.esper.event.map MapEventBean]
-           [com.espertech.esper.client EPServiceProviderManager]
+  (:import [com.espertech.esper.client EPServiceProviderManager]
            [com.espertech.esper.core.service EPServiceProviderImpl]))
 
 
@@ -93,9 +92,8 @@
       (attach-statement select-test (handler result))
       (trigger-event (new-event TestEvent :a 1 :b "Hello"))
       (let [r (first @result)]
-        (is (instance? MapEventBean r))
-        (is (= 1 (.get r "a")))
-        (is (= "Hello" (.get r "b"))))))
+        (is (= 1 (get r "a")))
+        (is (= "Hello" (get r "b"))))))
   (let [result (atom [])]
     (with-esper service {:events #{TestEvent}}
       (attach-statement select-test (handler result) (handler result))
