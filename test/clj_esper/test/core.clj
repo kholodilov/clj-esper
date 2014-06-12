@@ -92,8 +92,8 @@
       (attach-statement select-test (handler result))
       (trigger-event (new-event TestEvent :a 1 :b "Hello"))
       (let [r (first @result)]
-        (is (= 1 (get r "a")))
-        (is (= "Hello" (get r "b"))))))
+        (is (= 1 (:a r)))
+        (is (= "Hello" (:b r))))))
   (let [result (atom [])]
     (with-esper service {:events #{TestEvent}}
       (attach-statement select-test (handler result) (handler result))

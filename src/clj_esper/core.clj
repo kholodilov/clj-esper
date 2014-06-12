@@ -1,7 +1,7 @@
 (ns clj-esper.core
   (:import [java.util Properties]
            [com.espertech.esper.client Configuration UpdateListener EPStatement EPServiceProviderManager])
-  (:use [clojure.walk :only (stringify-keys)]))
+  (:use [clojure.walk :only (stringify-keys keywordize-keys)]))
 
 (defn create-listener
   "Creates an UpdateListener proxy that can be attached to
@@ -10,7 +10,8 @@
   [fun]
   (proxy [UpdateListener] []
     (update [newEvents oldEvents]
-      (let [newEventsAsMaps (map #(.getProperties %) newEvents)]
+      (let [newEventsAsMaps
+              (map #(keywordize-keys (into {} (.getProperties %))) newEvents)]
         (apply fun newEventsAsMaps)))))
 
 (defn create-service
