@@ -106,3 +106,10 @@
       (trigger-event (new-event TestEvent :a 1 :b "Hello"))
       (trigger-event (new-event OtherEvent :a "Hello"))
       (is (= 4 (count @r))))))
+
+(deftest pull-events-test
+  (with-esper service {:events #{TestEvent}}
+    (let [stmt (create-statement service "SELECT * FROM TestEvent.std:unique(a)")]
+      (trigger-event (new-event TestEvent :a 1 :b "2"))
+      (trigger-event (new-event TestEvent :a 2 :b "3"))
+      (is (= [{:a 1 :b "2"} {:a 2 :b "3"}] (pull-events stmt))))))

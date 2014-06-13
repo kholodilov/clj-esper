@@ -3,6 +3,9 @@
            [com.espertech.esper.client Configuration UpdateListener EPStatement EPServiceProviderManager])
   (:use [clojure.walk :only (stringify-keys keywordize-keys)]))
 
+(defn- esper-event-to-map [event]
+  (keywordize-keys (into {} (.getProperties event))))
+
 (defn create-listener
   "Creates an UpdateListener proxy that can be attached to
   handle updates to Esper statements. fun will be called for
@@ -11,7 +14,7 @@
   (proxy [UpdateListener] []
     (update [newEvents oldEvents]
       (let [newEventsAsMaps
-              (map #(keywordize-keys (into {} (.getProperties %))) newEvents)]
+              (map esper-event-to-map newEvents)]
         (apply fun newEventsAsMaps)))))
 
 (defn create-service
@@ -31,6 +34,13 @@
   "Attaches the listener to the statement."
   [statement listener]
   (.addListener statement listener))
+
+(defn pull-events [stmt]
+  (let [events-iter (.safeIterator stmt)]
+    (try
+      (map esper-event-to-map (iterator-seq events-iter))
+    (finally
+      (.close events-iter)))))
 
 (defn send-event
   "Pushes the event into the Esper processing engine."
