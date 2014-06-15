@@ -35,6 +35,11 @@
   [statement listener]
   (.addListener statement listener))
 
+(defn detach-listener
+  "Detaches the listener from the statement."
+  [statement listener]
+  (.removeListener statement listener))
+
 (defn pull-events [stmt]
   (let [events-iter (.safeIterator stmt)]
     (try

@@ -113,3 +113,14 @@
       (trigger-event (new-event TestEvent :a 1 :b "2"))
       (trigger-event (new-event TestEvent :a 2 :b "3"))
       (is (= [{:a 1 :b "2"} {:a 2 :b "3"}] (pull-events stmt))))))
+
+(deftest attach-detach-listener-test
+  (with-esper service {:events #{TestEvent}}
+    (let [stmt (create-statement service "SELECT * FROM TestEvent")
+          result (atom [])
+          listener (create-listener (handler result))]
+      (attach-listener stmt listener)
+      (trigger-event (new-event TestEvent :a 1 :b "2"))
+      (detach-listener stmt listener)
+      (trigger-event (new-event TestEvent :a 2 :b "3"))
+      (is (= [{:a 1 :b "2"}] @result)))))
