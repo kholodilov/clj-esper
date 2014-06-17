@@ -6,16 +6,22 @@
 (defn- esper-event-to-map [event]
   (keywordize-keys (into {} (.getProperties event))))
 
+(defn- esper-events-as-maps [events]
+  (map esper-event-to-map events))
+
 (defn create-listener
   "Creates an UpdateListener proxy that can be attached to
-  handle updates to Esper statements. fun will be called for
-  each newEvent received."
-  [fun]
-  (proxy [UpdateListener] []
-    (update [newEvents oldEvents]
-      (let [newEventsAsMaps
-              (map esper-event-to-map newEvents)]
-        (apply fun newEventsAsMaps)))))
+  handle updates to Esper statements. new-events-handler will be called for
+  each batch of new events received, old-events-handler, if provided - for old events."
+  ([new-events-handler old-events-handler]
+    (proxy [UpdateListener] []
+      (update [new-event-beans old-event-beans]
+        (let [new-events (esper-events-as-maps new-event-beans)
+              old-events (esper-events-as-maps old-event-beans)]
+          (if (seq new-events) (new-events-handler new-events))
+          (if (seq old-events) (old-events-handler old-events))))))
+  ([new-events-handler]
+    (create-listener new-events-handler (fn [_]))))
 
 (defn create-service
   ([configuration]

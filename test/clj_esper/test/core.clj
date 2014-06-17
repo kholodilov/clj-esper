@@ -50,7 +50,7 @@
 (defn- handler
   [atom]
   (fn [x]
-    (swap! atom conj x)))
+    (swap! atom concat x)))
 
 (deftest esper-configuration
   (with-esper service {:events #{TestEvent}}
@@ -113,6 +113,18 @@
       (trigger-event (new-event TestEvent :a 1 :b "2"))
       (trigger-event (new-event TestEvent :a 2 :b "3"))
       (is (= [{:a 1 :b "2"} {:a 2 :b "3"}] (pull-events stmt))))))
+
+(deftest old-events-handler-test
+  (with-esper service {:events #{TestEvent}}
+    (let [stmt (create-statement service "SELECT irstream * FROM TestEvent.std:unique(a)")
+          new-events (atom [])
+          old-events (atom [])
+          listener (create-listener (handler new-events) (handler old-events))]
+      (attach-listener stmt listener)
+      (trigger-event (new-event TestEvent :a 1 :b "2"))
+      (trigger-event (new-event TestEvent :a 1 :b "3"))
+      (is (= [{:a 1 :b "2"} {:a 1 :b "3"}] @new-events))
+      (is (= [{:a 1 :b "2"}] @old-events)))))
 
 (deftest attach-detach-listener-test
   (with-esper service {:events #{TestEvent}}
