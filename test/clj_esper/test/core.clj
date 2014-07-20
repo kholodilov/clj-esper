@@ -110,8 +110,8 @@
 (deftest pull-events-test
   (with-esper service {:events #{TestEvent}}
     (let [stmt (create-statement service "SELECT * FROM TestEvent.std:unique(a)")]
-      (trigger-event (new-event TestEvent :a 1 :b "2"))
-      (trigger-event (new-event TestEvent :a 2 :b "3"))
+      (trigger-event service TestEvent {:a 1 :b "2"})
+      (trigger-event service TestEvent {:a 2 :b "3"})
       (is (= [{:a 1 :b "2"} {:a 2 :b "3"}] (pull-events stmt))))))
 
 (deftest old-events-handler-test
@@ -121,8 +121,8 @@
           old-events (atom [])
           listener (create-listener (handler new-events) (handler old-events))]
       (attach-listener stmt listener)
-      (trigger-event (new-event TestEvent :a 1 :b "2"))
-      (trigger-event (new-event TestEvent :a 1 :b "3"))
+      (trigger-event service TestEvent {:a 1 :b "2"})
+      (trigger-event service TestEvent {:a 1 :b "3"})
       (is (= [{:a 1 :b "2"} {:a 1 :b "3"}] @new-events))
       (is (= [{:a 1 :b "2"}] @old-events)))))
 
@@ -132,7 +132,7 @@
           result (atom [])
           listener (create-listener (handler result))]
       (attach-listener stmt listener)
-      (trigger-event (new-event TestEvent :a 1 :b "2"))
+      (trigger-event service TestEvent {:a 1 :b "2"})
       (detach-listener stmt listener)
-      (trigger-event (new-event TestEvent :a 2 :b "3"))
+      (trigger-event service TestEvent {:a 2 :b "3"})
       (is (= [{:a 1 :b "2"}] @result)))))

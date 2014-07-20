@@ -169,6 +169,9 @@
     (let [event-type (event-name (meta event))
           event-data (stringify-keys event)]
       (send-event service event-data event-type)))
+  ([service event-type attrs-map]
+    (trigger-event service 
+      (apply new-event (flatten [event-type (vec attrs-map)]))))
   ([event]
     (trigger-event *service* event)))
 
