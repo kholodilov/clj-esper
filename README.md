@@ -13,9 +13,9 @@ It provides a SQL-like language across a stream of data:
 
 ## Installing
 
-A snapshot is available on [Clojars](http://clojars.org). This can be added to your [leiningen](http://github.com/technomancy/leiningen) `project.clj`:
+clj-esper is available on [Clojars](http://clojars.org). This can be added to your [leiningen](http://github.com/technomancy/leiningen) `project.clj`:
 
-	[clj-esper "1.0.0-SNAPSHOT"]
+[![Clojars Project](http://clojars.org/kholodilov/clj-esper/latest-version.svg)](http://clojars.org/kholodilov/clj-esper)
 
 ## Usage
 
