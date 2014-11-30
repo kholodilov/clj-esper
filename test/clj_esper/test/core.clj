@@ -136,3 +136,12 @@
       (detach-listener stmt listener)
       (trigger-event service TestEvent {:a 2 :b "3"})
       (is (= [{:a 1 :b "2"}] @result)))))
+
+(deftest external-time-events-test
+  (let [conf (create-configuration (xml-configuration) [])
+        service (create-service "external-time-events-test" conf)]
+      (send-current-time-event service 0)
+      (is (= 0 (get-current-time service)))
+      (send-current-time-event service 10000)
+      (is (= 10000 (get-current-time service)))
+    ))

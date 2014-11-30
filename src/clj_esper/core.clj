@@ -59,9 +59,11 @@
   [service event type]
   (.sendEvent (.getEPRuntime service) event type))
 
-(defn send-current-time-event
-  [service current-time]
+(defn send-current-time-event [service current-time]
   (.sendEvent (.getEPRuntime service) (CurrentTimeEvent. current-time)))
+
+(defn get-current-time [service]
+  (.getCurrentTime (.getEPRuntime service)))
 
 (defn configuration
   [service]
