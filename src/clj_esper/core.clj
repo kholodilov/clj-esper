@@ -1,6 +1,7 @@
 (ns clj-esper.core
   (:import [java.util Properties]
-           [com.espertech.esper.client Configuration UpdateListener EPStatement EPServiceProviderManager])
+           [com.espertech.esper.client Configuration UpdateListener EPStatement EPServiceProviderManager]
+           [com.espertech.esper.client.time CurrentTimeEvent])
   (:use [clojure.walk :only (stringify-keys keywordize-keys)]))
 
 (defn- esper-event-to-map [event]
@@ -57,6 +58,10 @@
   "Pushes the event into the Esper processing engine."
   [service event type]
   (.sendEvent (.getEPRuntime service) event type))
+
+(defn send-current-time-event
+  [service current-time]
+  (.sendEvent (.getEPRuntime service) (CurrentTimeEvent. current-time)))
 
 (defn configuration
   [service]
@@ -131,6 +136,9 @@
     (doseq [[k v] m]
       (.setProperty p (name k) (name v)))
     p))
+
+(defn xml-configuration []
+  (.configure (Configuration. )))
 
 (defn create-configuration
   "Builds an Esper Configuration object from a sequence of defevent records"
